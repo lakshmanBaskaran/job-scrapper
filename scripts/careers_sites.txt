@@ -1,0 +1,240 @@
+# Name | company website or careers page. Read by scripts/detect_ats.py.
+# Companies already in companies.yaml are skipped automatically.
+
+# --- From ireland-tech-master-list.xlsx ---
+Ardanis Technologies | https://ardanis.com
+Bounce Insights | https://bounceinsights.com
+CeADAR | https://ceadar.ie
+Centripetal | https://www.centripetal.ai/company/careers
+CitySwift | https://cityswift.com
+Cloudsmith | https://careers.cloudsmith.com/jobs
+Continuous Software | https://continuous.software
+Deciphex | https://www.deciphex.com/careers/open-roles
+NomuPay | https://nomupay.com
+Nuitee | https://nuitee.com
+Protex AI | https://www.protex.ai/careers
+Roadie | https://careers.roadie.io/
+Source | https://source.shop
+Tines | https://www.tines.com/careers/
+Wayflyer | https://wayflyer.com/en/careers
+XOCEAN | https://xocean.com
+Accenture Ireland | https://www.accenture.com/ie-en/careers
+Amazon / AWS | https://amazon.jobs
+Anthropic | https://anthropic.com/careers
+Arm | https://arm.com/company/careers
+BearingPoint | https://www.bearingpoint.com/en-ie/careers/open-roles/?country=IE
+CarGurus | https://cargurus.com/careers
+Clio | https://www.clio.com/uk/about/careers/
+CoinJar | https://coinjar.com
+Currenxie | https://currenxie.com
+Datadog | https://careers.datadoghq.com
+Datavant | https://www.datavant.com/about/careers
+Deloitte Ireland | https://deloitteie.wd3.myworkdayjobs.com/en-US/Experienced_Professionals
+Everseen | https://everseen.com
+Fenergo | https://apply.workable.com/fenergocareers/
+Fidelity Investments | https://jobs.fidelity.com/ie/early-career/
+Genesys | https://genesys.com/company/careers
+Gong | https://www.gong.io/careers
+Integral Ad Science | https://integralads.com/about-ias/careers/
+Integrity360 | https://www.integrity360.com/careers
+Klaviyo | https://klaviyo.com/careers
+Liberty IT | https://liberty-it.co.uk
+MongoDB | https://mongodb.com/careers
+Monzo | https://monzo.com/careers
+New Relic | https://newrelic.com/careers
+OpenAI | https://openai.com/careers
+OpenText | https://opentext.com/about/careers
+Origina | https://www.origina.com/careers
+Proofpoint | https://proofpoint.wd5.myworkdayjobs.com/en-US/proofpointcareers
+Prove | https://prove.com/careers
+PwC Ireland | https://www.pwc.ie/careers-ie.html
+Qashio | https://qashio.com
+Qualcomm | https://qualcomm.eightfold.ai/careers
+Rapid7 | https://careers.rapid7.com/
+Remitly | https://remitly.com/careers
+Squarespace | https://squarespace.com/careers
+Stripe | https://stripe.com/jobs
+Toast | https://careers.toasttab.com/homepage
+Version 1 | https://www.version1.com/careers/
+Vodafone Ireland | https://vodafone.ie/about/careers
+Workday | https://workday.com/en-us/company/careers
+&Open | https://andopen.co
+Catalyst | https://catalyst-group.com
+CleverCards | https://clevercards.com
+EdgeTier | https://edgetier.com
+Galvia AI | https://galvia.ai
+Kneat Solutions | https://kneat.com
+Kota | https://kota.io
+Manna Drone Delivery | https://manna.aero
+Nory | https://nory.ai
+Teamwork.com | https://teamwork.com/careers
+TEKenable | https://tekenable.com
+Trustap | https://trustap.com
+AIB | https://aib.ie/careers
+Analog Devices | https://analog.com/en/about-adi/careers.html
+Bank of Ireland | https://bankofireland.com/careers
+Ericsson | https://ericsson.com/en/careers
+Google | https://google.com/about/careers
+Guidewire | https://guidewire.com/careers
+HubSpot | https://hubspot.com/careers
+Intel Ireland | https://intel.com/content/www/us/en/jobs
+Intercom | https://intercom.com/careers
+Mastercard | https://careers.mastercard.com
+Ryanair Labs | https://careers.ryanair.com
+ServiceNow | https://servicenow.com/careers.html
+Workhuman | https://workhuman.com/careers
+Akara Robotics | https://akara.ai
+ALPACA | https://alpaca-assessment.com
+AMPLY Discovery | https://amplydiscovery.com
+Assiduous | https://assiduous.tech
+Buymedia | https://buymediahq.com
+Cozmotec | https://cozmotec.ie
+CreditLogic | https://creditlogic.com
+Cytidel | https://cytidel.com
+Dataships | https://dataships.io
+EIDA Solutions | https://eidasolutions.com
+Grinds 360 | https://grinds360.ie
+Hexis | https://hexis.live
+Imvizar | https://imvizar.com
+Numra | https://autonifai.com
+Oblivious AI | https://oblivious.ai
+Proveye | https://proveye.io
+Skillsvista | https://skillsvista.com
+Solgari | https://solgari.com
+Spellings for Me | https://spellingsforme.com
+Sweepr | https://sweepr.com
+ToDesktop | https://todesktop.com
+ZeroMission | https://zeromission.se
+Zerve | https://zerve.ai
+Meta | https://metacareers.com
+Microsoft Ireland | https://careers.microsoft.com/v2/global/en/home.html
+Oracle | https://oracle.com/careers
+Salesforce | https://salesforce.com/company/careers
+Aylien | https://quantexa.com/careers
+Brazn.ai | https://brazn.ai
+CarTrawler | https://cartrawler.com/careers
+Chalk | https://chalk.ai
+CR2 | https://cr2.com/careers
+Datalex | https://datalex.com/careers
+Deliverance AI | https://deliverance.ai
+Delve | https://delve.co
+Discovered Labs | https://discoveredlabs.com
+Evervault | https://evervault.com/careers
+Glacis | https://glacis.com
+Hostelworld | https://hostelworldgroup.com/careers
+Kinesense | https://kinesense-vca.com
+LatticeFlow AI | https://latticeflow.ai
+Lemonet | https://lemonet.io
+Lex Consultancy | https://lexconsultancy.ie
+Newcode.ai | https://newcode.ai
+Nuritas | https://nuritas.com
+Pantheon Platform | https://pantheon.io/careers
+PSK Ireland | https://psk-inc.com
+pubGENIUS.inc | https://pubgenius.io
+Seapoint | https://seapoint.ie
+SleepScore Labs | https://sleepscore.com
+SoapBox Labs | https://curriculumassociates.com/careers
+WeCoOwn | https://wecoown.com
+ZenaDrone | https://zenadrone.com
+Alkermes | https://alkermes.com/careers
+Aon | https://aon.com/careers
+Arista Networks | https://arista.com/en/careers
+Asana | https://asana.com/jobs
+Avolon | https://avolon.aero/careers
+Bank of America | https://careers.bankofamerica.com
+Barclays | https://home.barclays/careers
+Bausch Health | https://bauschhealth.com/careers
+Citi | https://jobs.citi.com
+Contentful | https://contentful.com/careers
+Decawave | https://qorvo.com/careers
+DocuSign | https://careers.docusign.com
+Dun & Bradstreet | https://dnb.com/about-us/careers.html
+EY Ireland | https://ey.com/en_ie/careers
+FINEOS | https://fineos.com/careers
+First Derivative | https://firstderivative.com/careers
+Flipdish | https://flipdish.com/careers
+Flutter / Paddy Power | https://flutter.com/careers
+Forcepoint | https://forcepoint.com/company/careers
+GoTo | https://goto.com/company/careers
+Highspot | https://highspot.com/careers
+ICON plc | https://careers.iconplc.com
+Intertrust | https://intertrust.com
+JPMorgan Chase | https://jpmorganchase.com/careers
+Kepak Group | https://kepak.com/careers
+Keywords Studios | https://keywordsstudios.com/careers
+KPMG Ireland | https://kpmg.com/ie/en/home/careers.html
+LetsGetChecked | https://letsgetchecked.com/careers
+Mural | https://mural.co/careers
+Optum | https://optum.com/careers
+Pinterest | https://pinterestcareers.com
+Qualtrics | https://qualtrics.com/careers
+Smartsheet | https://smartsheet.com/careers
+SMBC Aviation Capital | https://smbc.aero/careers
+Take-Two Interactive | https://take2games.com/careers
+Tenable | https://tenable.com/careers
+Trellix | https://trellix.com/about/careers
+Varonis | https://varonis.com/careers
+Wrike | https://wrike.com/careers
+Zendesk | https://zendesk.com/jobs
+
+# --- From candidates.txt names not found by slug ---
+Workvivo | https://www.workvivo.com/careers
+Manna | https://www.manna.aero/careers
+Fire Financial | https://fire.com/careers
+Glofox | https://www.glofox.com/careers
+Daon | https://www.daon.com/careers
+Cora Systems | https://corasystems.com/careers
+Immedis | https://www.immedis.com/careers
+Kyckr | https://www.kyckr.com/careers
+ID-Pal | https://www.id-pal.com/careers
+Payslip | https://payslip.com/careers
+Openvolt | https://www.openvolt.com
+Buymie | https://www.buymie.eu
+Grid Finance | https://www.gridfinance.ie
+Vela Games | https://www.velagames.com/careers
+Phorest | https://www.phorest.com/careers
+Silvermine Bay | https://silverminebay.com
+Mobile Travel Technologies | https://www.mtt.travel/careers
+Altada | https://altada.ai
+Rockwell Systems | https://rockwellsystems.ie
+Mavenoid | https://www.mavenoid.com/careers
+Codec | https://www.codec.ie/careers
+ShipStation | https://www.shipstation.com/careers
+Xtremepush | https://www.xtremepush.com/careers
+Workiva | https://www.workiva.com/careers
+Paysafe | https://www.paysafe.com/careers
+Mailchimp | https://mailchimp.com/careers
+Zalando | https://jobs.zalando.com
+Demonware | https://demonware.net/careers
+Unity | https://careers.unity.com
+Bentley Systems | https://www.bentley.com/company/careers
+Rakuten Kobo | https://www.rakuten.kobo.com/careers
+Booking.com | https://careers.booking.com
+Expedia | https://careers.expediagroup.com
+Fanatics | https://www.fanaticsinc.com/careers
+Flutter | https://www.flutter.com/careers
+Paddy Power | https://www.paddypowerbetfair.com/careers
+Betfair | https://www.betfair.com/aboutUs/Careers
+OpenBet | https://www.openbet.com/careers
+Playtech | https://www.playtech.com/careers
+Bragg Gaming | https://bragg.games/careers
+Carne Group | https://www.carnegroup.com/careers
+Northern Trust | https://careers.northerntrust.com
+Citco | https://www.citco.com/careers
+Apex Group | https://www.apexgroup.com/careers
+Davy | https://www.davy.ie/careers
+Goodbody | https://www.goodbody.ie/careers
+Aer Lingus | https://careers.aerlingus.com
+ESB | https://esb.ie/careers
+Bord Gais Energy | https://www.bordgaisenergy.ie/careers
+Eir | https://www.eir.ie/careers
+Three Ireland | https://www.three.ie/careers
+FBD Insurance | https://www.fbd.ie/careers
+Zurich | https://www.zurich.ie/careers
+Irish Life | https://www.irishlife.ie/careers
+An Post | https://www.anpost.com/careers
+Indeed | https://www.indeed.jobs
+Yahoo | https://www.yahooinc.com/careers
+Dell | https://jobs.dell.com
+Huawei | https://career.huawei.com
+SIG Susquehanna | https://sig.com/careers

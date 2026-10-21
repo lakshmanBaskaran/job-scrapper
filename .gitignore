@@ -1,0 +1,10 @@
+radar.db-journal
+digest.html
+__pycache__/
+.pytest_cache/
+.env
+radar.log
+radar.db.lock
+ollama.log
+detect_cache.json
+detected.yaml

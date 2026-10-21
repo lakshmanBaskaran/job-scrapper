@@ -1,0 +1,162 @@
+# One company per line. Optional slugs after a bar:  Name | slug1, slug2
+# Lines starting with # are ignored. Add any company you hear about.
+
+# --- Irish startups and scale-ups ---
+Wayflyer
+Tines
+Evervault
+Flipdish
+Fenergo
+Workhuman
+Workvivo
+Kitman Labs | kitmanlabs, kitman-labs
+LetsGetChecked
+Manna | manna, mannaaero, manna-drone-delivery
+Nory
+Trustap
+Fire Financial | fire, firefinancial, fire-financial-services
+Xtremepush
+Teamwork | teamwork, teamworkcom
+Glofox
+Learnosity
+CarTrawler
+Hostelworld
+Datalex
+Daon
+Poppulo
+Cora Systems | corasystems
+Immedis
+Kyckr
+Bizimply
+SoapBox Labs | soapboxlabs
+ID-Pal | idpal, id-pal
+Nuritas
+Swoop | swoop, swoopfunding
+Payslip
+Fexco
+Zai | zai, currencyfair
+Boxever
+Nearform
+Openvolt
+Buymie
+Grid Finance | gridfinance
+Vela Games | velagames
+Phorest
+Clio
+Leveris
+Aylien
+Silvermine Bay | silverminebay
+Pointy
+Ocuco
+Mobile Travel Technologies | mtt
+Travelport
+Pilz
+Altada | altada, altadatechnologies
+Sitetracker
+Rockwell Systems
+Qualio
+Mavenoid
+Codec | codec, codec-dss
+Version 1 | version1
+Fidelity Investments Ireland | fidelity
+ExamWorks
+ShipStation
+
+# --- Global companies with real Dublin/Cork engineering teams ---
+Stripe
+Datadog
+Squarespace
+Dropbox
+Twilio
+Okta
+Coinbase
+Udemy
+Etsy
+Zendesk
+HubSpot
+Workday
+Toast
+Airtable
+Pinterest
+Reddit
+Elastic
+GitLab
+MongoDB
+Cloudflare
+Snowflake
+Databricks
+Shopify
+Indeed
+Yahoo
+Tenable
+Rapid7
+Qualtrics
+Genesys
+Wrike
+Personio
+Pipedrive
+Mailchimp
+Zalando
+Riot Games | riotgames
+Demonware
+Keywords Studios | keywordsstudios
+Unity
+Bentley Systems
+Salesloft
+Huawei Ireland
+Arista Networks | arista
+Analog Devices
+Workiva
+Guidewire
+Fiserv
+Equifax
+Global Payments | globalpayments
+Paysafe
+Nuvei
+Payoneer
+Rakuten Kobo | rakutenkobo, kobo
+Tripadvisor
+Booking.com | bookingcom
+Wolters Kluwer
+Expedia
+Fanatics
+Flex
+
+# --- Betting and gaming (non-tech companies hiring engineers) ---
+Flutter | flutter, flutterint, flutterentertainment
+Paddy Power | paddypower
+FanDuel
+Betfair
+BoyleSports
+Kambi
+Sportradar
+Playtech
+Bragg Gaming | bragg, bragggaming
+OpenBet
+Entain
+Kindred
+Betsson
+
+# --- Banks, insurers, airlines, utilities, fund admin ---
+Carne Group | carne, carnegroup
+State Street
+Northern Trust
+Citco
+Apex Group | apexgroup
+Davy
+Goodbody
+Ryanair
+Aer Lingus | aerlingus
+DAA
+ESB
+Bord Gais Energy | bordgais
+Eir
+Vodafone Ireland | vodafone
+Three Ireland | three
+FBD Insurance | fbd
+Zurich
+Irish Life
+An Post | anpost
+Bank of Ireland | bankofireland
+AIB
+PTSB

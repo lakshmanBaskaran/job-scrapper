@@ -1,0 +1,39 @@
+# Careers URLs for companies the name search couldn't find (mostly Workday).
+# Run:  python scripts/discover.py --candidates scripts/careers_urls.txt
+# Format:  Name | URL      (any job or search page URL from the company's careers site works)
+# Only State Street was verified when this list was written; wrong guesses just show as "not found".
+# To fix one: open the company's careers page, click any job, paste that URL here instead.
+
+# --- Banks, funds, payments ---
+State Street | https://statestreet.wd1.myworkdayjobs.com/en-US/Global
+Northern Trust | https://ntrs.wd1.myworkdayjobs.com/en-US/northerntrust
+Fidelity Investments | https://fmr.wd1.myworkdayjobs.com/en-US/FidelityCareers
+Mastercard | https://mastercard.wd1.myworkdayjobs.com/en-US/CorporateCareers
+Citi | https://citi.wd5.myworkdayjobs.com/en-US/2
+BNY | https://bnymellon.wd1.myworkdayjobs.com/en-US/BNY_Careers
+Bank of America | https://ghr.wd1.myworkdayjobs.com/en-US/Lateral-US
+BlackRock | https://blackrock.wd1.myworkdayjobs.com/en-US/BlackRock_Professional
+Susquehanna (SIG) | https://sig.wd1.myworkdayjobs.com/en-US/SIG_Careers
+Fiserv | https://fiserv.wd5.myworkdayjobs.com/en-US/EXT
+Global Payments | https://tsys.wd1.myworkdayjobs.com/en-US/TSYS
+
+# --- Tech with Irish engineering sites ---
+Workday | https://workday.wd5.myworkdayjobs.com/en-US/Workday
+Salesforce | https://salesforce.wd12.myworkdayjobs.com/en-US/External_Career_Site
+Analog Devices | https://analogdevices.wd1.myworkdayjobs.com/en-US/External
+Intel | https://intel.wd1.myworkdayjobs.com/en-US/External
+Dell | https://dell.wd1.myworkdayjobs.com/en-US/External
+Adobe | https://adobe.wd5.myworkdayjobs.com/en-US/external_experienced
+Zendesk | https://zendesk.wd1.myworkdayjobs.com/en-US/zendesk
+Equifax | https://equifax.wd5.myworkdayjobs.com/en-US/External
+Guidewire | https://guidewire.wd5.myworkdayjobs.com/en-US/External
+Genesys | https://genesys.wd1.myworkdayjobs.com/en-US/Genesys
+Workiva | https://workiva.wd1.myworkdayjobs.com/en-US/careers
+Wolters Kluwer | https://wk.wd3.myworkdayjobs.com/en-US/External
+Huawei | https://huawei.wd3.myworkdayjobs.com/en-US/External
+Expedia | https://expedia.wd5.myworkdayjobs.com/en-US/search
+
+# --- Betting and gaming ---
+Flutter | https://flutter.wd3.myworkdayjobs.com/en-US/FlutterCareers
+Flutter (alt) | https://flutterbe.wd3.myworkdayjobs.com/en-US/Flutter_Careers
+Entain | https://entaingroup.wd3.myworkdayjobs.com/en-US/Entain_Careers

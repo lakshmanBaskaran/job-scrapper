@@ -1,0 +1,128 @@
+# Each entry: name, ats, and the identifier that ATS needs.
+#   greenhouse / lever / ashby / workable / smartrecruiters / personio -> slug
+#   lever on EU hosting -> add `region: eu`
+#   workday -> tenant, host (wd1/wd3/wd5...), site, optional search terms
+# Add `enabled: false` to pause one without deleting it.
+# Numbers in comments: open jobs / in Ireland, from discover.py on 13 Oct 2026.
+
+companies:
+  # ---- Irish companies ----
+  - {name: CarTrawler, ats: lever, slug: cartrawler}             # 13 / 12
+  - {name: Wayflyer, ats: ashby, slug: wayflyer}                 # 16 / 9
+  - {name: Tines, ats: greenhouse, slug: tines}                  # 28 / 6
+  - {name: Workhuman, ats: ashby, slug: workhuman}               # 8 / 4
+  - {name: Qualio, ats: greenhouse, slug: qualio}                # 9 / 4
+  - {name: Flipdish, ats: greenhouse, slug: flipdish}            # 11 / 3
+  - {name: Learnosity, ats: workable, slug: learnosity}          # 5 / 3
+  - {name: Nearform, ats: greenhouse, slug: nearform}            # 21 / 3
+  - {name: Poppulo, ats: greenhouse, slug: poppulo}              # 9 / 2
+  - {name: Kitman Labs, ats: smartrecruiters, slug: kitmanlabs}  # 1 / 1
+  - {name: LetsGetChecked, ats: smartrecruiters, slug: letsgetchecked}  # 1 / 1
+  - {name: Teamwork, ats: personio, slug: teamwork}              # 1 / 1
+  - {name: Evervault, ats: ashby, slug: evervault}               # 5 / 0, Dublin company
+  - {name: Nory, ats: ashby, slug: nory}                         # 5 / 0, Dublin company
+  - {name: Version 1, ats: smartrecruiters, slug: version1}      # 41 / 41
+
+  # ---- Global companies with Irish engineering teams ----
+  - {name: Stripe, ats: greenhouse, slug: stripe}                # 720 / 79
+  - {name: MongoDB, ats: greenhouse, slug: mongodb}              # 393 / 55
+  - {name: Elastic, ats: greenhouse, slug: elastic}              # 410 / 26
+  - {name: Datadog, ats: greenhouse, slug: datadog}              # 437 / 22
+  - {name: Toast, ats: greenhouse, slug: toast}                  # 316 / 18
+  - {name: Snowflake, ats: ashby, slug: snowflake}               # 357 / 15
+  - {name: Twilio, ats: greenhouse, slug: twilio}                # 149 / 15
+  - {name: GitLab, ats: greenhouse, slug: gitlab}                # 221 / 10
+  - {name: Okta, ats: greenhouse, slug: okta}                    # 377 / 10
+  - {name: Squarespace, ats: greenhouse, slug: squarespace}      # 34 / 7
+  - {name: Pinterest, ats: greenhouse, slug: pinterest}          # 175 / 6
+  - {name: Wrike, ats: greenhouse, slug: wrike}                  # 59 / 5
+  - {name: Databricks, ats: greenhouse, slug: databricks}        # 897 / 3
+  - {name: Reddit, ats: greenhouse, slug: reddit}                # 147 / 3
+  - {name: Tripadvisor, ats: greenhouse, slug: tripadvisor}      # 103 / 3
+  - {name: Dropbox, ats: greenhouse, slug: dropbox}              # 31 / 2
+  - {name: Riot Games, ats: greenhouse, slug: riotgames}         # 156 / 2
+  - {name: Udemy, ats: greenhouse, slug: udemy}                  # 7 / 2
+  - {name: Coinbase, ats: greenhouse, slug: coinbase}            # 225 / 1
+  - {name: Payoneer, ats: greenhouse, slug: payoneer}            # 100 / 1
+  - {name: Pipedrive, ats: lever, slug: pipedrive}               # 8 / 1
+  - {name: Intercom, ats: greenhouse, slug: intercom}            # 107 / 38
+  # ---- Workday employers (found 13 Oct 2026) ----
+  - { name: State Street, ats: workday, tenant: statestreet, host: wd1, site: Global }
+  - { name: Fidelity Investments, ats: workday, tenant: fmr, host: wd1, site: FidelityCareers }
+  - { name: Mastercard, ats: workday, tenant: mastercard, host: wd1, site: CorporateCareers }
+  - { name: Citi, ats: workday, tenant: citi, host: wd5, site: "2" }
+  - { name: Bank of America, ats: workday, tenant: ghr, host: wd1, site: Lateral-US }
+  - { name: BlackRock, ats: workday, tenant: blackrock, host: wd1, site: BlackRock_Professional }
+  - { name: Fiserv, ats: workday, tenant: fiserv, host: wd5, site: EXT }
+  - { name: Global Payments, ats: workday, tenant: tsys, host: wd1, site: TSYS }
+  - { name: Workday, ats: workday, tenant: workday, host: wd5, site: Workday }
+  - { name: Salesforce, ats: workday, tenant: salesforce, host: wd12, site: External_Career_Site }
+  - { name: Analog Devices, ats: workday, tenant: analogdevices, host: wd1, site: External }
+  - { name: Intel, ats: workday, tenant: intel, host: wd1, site: External }
+  - { name: Adobe, ats: workday, tenant: adobe, host: wd5, site: external_experienced }
+  - { name: Zendesk, ats: workday, tenant: zendesk, host: wd1, site: zendesk }
+  - { name: Equifax, ats: workday, tenant: equifax, host: wd5, site: External }
+  - { name: Guidewire, ats: workday, tenant: guidewire, host: wd5, site: External }
+  - { name: Genesys, ats: workday, tenant: genesys, host: wd1, site: Genesys }
+  - { name: Wolters Kluwer, ats: workday, tenant: wk, host: wd3, site: External }
+  # ---- From ireland-tech-master-list (found 13 Oct 2026) ----
+  - { name: Deloitte Ireland, ats: workday, tenant: deloitteie, host: wd3, site: Experienced_Professionals }
+  - { name: OpenAI, ats: ashby, slug: openai }
+  - { name: Proofpoint, ats: workday, tenant: proofpoint, host: wd5, site: proofpointcareers }
+  - { name: BearingPoint, ats: greenhouse, slug: bearingpoint }
+  - { name: Arista Networks, ats: smartrecruiters, slug: aristanetworks }
+  - { name: ServiceNow, ats: smartrecruiters, slug: servicenow }
+  - { name: Klaviyo, ats: greenhouse, slug: klaviyo }
+  - { name: Anthropic, ats: greenhouse, slug: anthropic }
+  - { name: Fenergo, ats: workable, slug: fenergocareers }
+  - { name: Protex AI, ats: ashby, slug: "Protex%20AI" }
+  - { name: Kota, ats: ashby, slug: kota }
+  - { name: "&Open", ats: personio, slug: open }
+  - { name: TEKenable, ats: workable, slug: tekenable }
+  - { name: Nuitee, ats: greenhouse, slug: nuitee }
+  - { name: CarGurus, ats: greenhouse, slug: cargurus }
+  - { name: Monzo, ats: greenhouse, slug: monzo }
+  - { name: Asana, ats: greenhouse, slug: asana }
+  - {name: Everseen, ats: lever, slug: everseen, region: eu}
+  - { name: CitySwift, ats: greenhouse, slug: cityswift }
+  - { name: Bounce Insights, ats: personio, slug: bounce-insights }
+  - { name: New Relic, ats: greenhouse, slug: newrelic }
+  - { name: Prove, ats: greenhouse, slug: prove }
+  - { name: Chalk, ats: ashby, slug: chalk }
+  - { name: Fexco, ats: pinpoint, slug: fexco }
+  - { name: Bizimply, ats: pinpoint, slug: bizimply }
+  # --- from detect_ats (jobs in Ireland today) ---
+  - {name: Integrity360, ats: bamboohr, slug: integrity360}
+  - {name: PwC Ireland, ats: workday, tenant: pwc, host: wd3, site: Global_Experienced_Careers}
+  - {name: Kepak Group, ats: workable, slug: kepak}
+  - {name: Intel Ireland, ats: workday, tenant: intel, host: wd1, site: External}
+  - {name: Davy, ats: workable, slug: davy}
+  - {name: Northern Trust, ats: workday, tenant: ntrs, host: wd1, site: northerntrust}
+  - {name: Demonware, ats: workday, tenant: xboxgaming, host: wd1, site: External}
+  - {name: Bentley Systems, ats: workday, tenant: bentleysystems, host: wd5, site: bentley}
+  - {name: Gong, ats: greenhouse, slug: gongio}
+  - {name: Bord Gais Energy, ats: workday, tenant: centrica, host: wd3, site: Centrica}
+  - {name: Currenxie, ats: bamboohr, slug: currenxie}
+  - {name: Deciphex, ats: bamboohr, slug: deciphex}
+  - {name: Dun & Bradstreet, ats: lever, slug: dnb}
+  - {name: Glofox, ats: workday, tenant: abcfinancial, host: wd5, site: ABCFinancialServices}
+  - {name: Daon, ats: bamboohr, slug: daoninc}
+  - {name: Codec, ats: pinpoint, slug: codec}
+  - {name: Fanatics, ats: greenhouse, slug: fanaticsfbg}
+  - {name: Integral Ad Science, ats: workday, tenant: integralads, host: wd1, site: IAScareers}
+  - {name: Origina, ats: bamboohr, slug: origina}
+  - {name: GoTo, ats: workday, tenant: goto, host: wd5, site: gotocareers}
+  - {name: Payslip, ats: greenhouse, slug: payslipltd}
+  - {name: Apex Group, ats: workday, tenant: theapexgroup, host: wd3, site: apexgroupcareers}
+  - {name: Bragg Gaming, ats: workday, tenant: bragggaming, host: wd107, site: External}
+  - {name: Forcepoint, ats: workday, tenant: forcepoint, host: wd1, site: external-careers}
+  - {name: Tenable, ats: greenhouse, slug: tenableinc}
+
+  # --- from earlier discover runs ---
+  - {name: BoyleSports, ats: teamtailor, slug: boylesports}
+  - {name: Huawei Ireland, ats: teamtailor, slug: huaweiireland}
+  - {name: Qashio, ats: teamtailor, slug: qashio}
+  - {name: Entain, ats: smartrecruiters, slug: entain}
+  - {name: PTSB, ats: pinpoint, slug: ptsb}
+  - {name: Ocuco, ats: bamboohr, slug: ocuco}
+  - {name: CR2, ats: bamboohr, slug: cr2}

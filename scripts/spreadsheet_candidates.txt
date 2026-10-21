@@ -1,0 +1,151 @@
+# Companies from ireland-tech-master-list.xlsx that the radar doesn't cover yet.
+# Run:  python scripts/discover.py --candidates scripts/spreadsheet_candidates.txt
+# Lines with a URL are read straight from the URL; the rest are tried as names on every ATS.
+
+Ardanis Technologies | ardanistechnologies, ardanis-technologies
+Bounce Insights | bounceinsights, bounce-insights
+CeADAR | ceadar
+Centripetal | centripetal
+CitySwift | cityswift
+Cloudsmith | cloudsmith
+Continuous Software | continuoussoftware, continuous-software
+Deciphex | deciphex
+NomuPay | nomupay
+Nuitee | nuitee
+Protex AI | https://jobs.ashbyhq.com/Protex%20AI
+Roadie | roadie, lardersoftware, larder-software
+Source | source
+XOCEAN | xocean
+Anthropic | anthropic
+BearingPoint | bearingpoint
+CarGurus | cargurus
+Clio | clio
+CoinJar | coinjar
+Currenxie | currenxie
+Datavant | datavant
+Deloitte Ireland | https://deloitteie.wd3.myworkdayjobs.com/en-US/Experienced_Professionals
+Everseen | everseen
+Fenergo | https://apply.workable.com/fenergocareers/
+Gong | gong
+Integral Ad Science | integraladscience, integral-ad-science
+Integrity360 | integrity360
+Klaviyo | klaviyo
+Liberty IT | libertyit, liberty-it
+Monzo | monzo
+New Relic | newrelic, new-relic
+OpenAI | openai
+OpenText | opentext
+Origina | origina
+Proofpoint | https://proofpoint.wd5.myworkdayjobs.com/en-US/proofpointcareers
+Prove | prove
+Qashio | qashio
+Rapid7 | rapid7
+Remitly | remitly
+&Open | open
+Catalyst | catalyst, i3pt
+CleverCards | clevercards
+EdgeTier | edgetier
+Galvia AI | galviaai, galvia-ai
+Kneat Solutions | kneatsolutions, kneat-solutions
+Kota | kota
+Manna Drone Delivery | mannadronedelivery, manna-drone-delivery
+TEKenable | tekenable
+Trustap | trustap
+HubSpot | hubspot
+ServiceNow | servicenow
+Akara Robotics | akararobotics, akara-robotics
+ALPACA | alpaca
+AMPLY Discovery | amplydiscovery, amply-discovery
+Assiduous | assiduous
+Buymedia | buymedia
+Cozmotec | cozmotec
+CreditLogic | creditlogic
+Cytidel | cytidel
+Dataships | dataships
+EIDA Solutions | eidasolutions, eida-solutions
+Grinds 360 | grinds360, grinds-360
+Hexis | hexis
+Imvizar | imvizar
+Numra | numra, autonifai
+Oblivious AI | obliviousai, oblivious-ai
+Proveye | proveye
+Skillsvista | skillsvista
+Solgari | solgari
+Spellings for Me | spellingsforme, spellings-for-me
+Sweepr | sweepr
+ToDesktop | todesktop
+ZeroMission | zeromission
+Zerve | zerve
+Aylien | aylien, quantexa
+Brazn.ai | braznai, brazn-ai
+Chalk | chalk
+CR2 | cr2
+Datalex | datalex
+Deliverance AI | deliveranceai, deliverance-ai
+Delve | delve
+Discovered Labs | discoveredlabs, discovered-labs
+Glacis | glacis
+Hostelworld | hostelworld
+Kinesense | kinesense
+LatticeFlow AI | latticeflowai, latticeflow-ai
+Lemonet | lemonet
+Lex Consultancy | lexconsultancy, lex-consultancy
+Newcode.ai | newcodeai, newcode-ai
+Nuritas | nuritas
+Pantheon Platform | pantheonplatform, pantheon-platform
+PSK Ireland | pskireland, psk-ireland
+pubGENIUS.inc | pubgeniusinc, pubgenius-inc
+Seapoint | seapoint
+SleepScore Labs | sleepscorelabs, sleepscore-labs
+SoapBox Labs | soapboxlabs, soapbox-labs, curriculumassociates, curriculum-associates
+WeCoOwn | wecoown
+ZenaDrone | zenadrone
+Arista Networks | aristanetworks, arista-networks
+Asana | asana
+Contentful | contentful
+Decawave | decawave, qorvo
+DocuSign | docusign
+Dun & Bradstreet | dunbradstreet, dun-bradstreet
+FINEOS | fineos
+First Derivative | firstderivative, first-derivative
+Flutter / Paddy Power | flutterpaddypower, flutter-paddy-power
+Forcepoint | forcepoint
+GoTo | goto, logmein
+Highspot | highspot
+Keywords Studios | keywordsstudios, keywords-studios
+Mural | mural
+Qualtrics | qualtrics
+Smartsheet | smartsheet
+Take-Two Interactive | taketwointeractive, take-two-interactive
+Tenable | tenable
+Trellix | trellix
+Varonis | varonis
+
+# Own careers systems the radar can't read (check these by hand or with LinkedIn alerts):
+#   Accenture Ireland
+#   Amazon / AWS
+#   Arm
+#   PwC Ireland
+#   Qualcomm
+#   Vodafone Ireland
+#   AIB
+#   Bank of Ireland
+#   Ericsson
+#   Google
+#   Ryanair Labs
+#   Meta
+#   Microsoft Ireland
+#   Oracle
+#   Alkermes
+#   Aon
+#   Avolon
+#   Barclays
+#   Bausch Health
+#   EY Ireland
+#   ICON plc
+#   Intertrust
+#   JPMorgan Chase
+#   Kepak Group
+#   KPMG Ireland
+#   Optum (UnitedHealth)
+#   SMBC Aviation Capital

@@ -1,0 +1,94 @@
+name: job radar
+
+# Hourly, 08:00-19:00 Irish time, every day.
+# GitHub cron is UTC and Ireland switches between UTC+1 (summer) and UTC+0 (winter),
+# so this fires 07:07-19:07 UTC and the first step skips runs outside 08-19 Dublin time.
+# (Minute 7 avoids the top-of-the-hour rush; GitHub may still start runs a few minutes late.)
+on:
+  schedule:
+    - cron: "7 7-19 * * *"
+  workflow_dispatch:            # "Run workflow" button; lets you pick the LLM for that run
+    inputs:
+      llm:
+        description: "LLM for this run"
+        type: choice
+        options: [default, anthropic, ollama, none]
+        default: default
+
+permissions:
+  contents: write               # needed to commit radar.db back
+
+concurrency:
+  group: radar                  # never two runs at once (they'd fight over radar.db)
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      # Which LLM: the manual-run choice, else the repo variable RADAR_LLM, else anthropic.
+      RADAR_LLM: ${{ (inputs.llm != '' && inputs.llm != 'default') && inputs.llm || vars.RADAR_LLM || 'anthropic' }}
+      OLLAMA_MODEL: ${{ vars.OLLAMA_MODEL || 'qwen2.5:7b' }}
+      OLLAMA_MODELS: /home/runner/ollama-models
+    steps:
+      - name: Inside 08:00-19:00 Dublin time?
+        id: hours
+        run: |
+          h=$(TZ=Europe/Dublin date +%-H)
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] || { [ "$h" -ge 8 ] && [ "$h" -le 19 ]; }; then
+            echo "go=true" >> "$GITHUB_OUTPUT"; echo "running ($h:xx Dublin, LLM: $RADAR_LLM)"
+          else
+            echo "go=false" >> "$GITHUB_OUTPUT"; echo "skipping: $h:xx in Dublin is outside 08-19"
+          fi
+
+      - uses: actions/checkout@v4
+        if: steps.hours.outputs.go == 'true'
+
+      - uses: actions/setup-python@v5
+        if: steps.hours.outputs.go == 'true'
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install
+        if: steps.hours.outputs.go == 'true'
+        run: pip install -r requirements.txt
+
+      # ---- Ollama only: install it, restore the model from cache (a 7B model is ~4.7 GB) ----
+      - name: Cache Ollama model
+        if: steps.hours.outputs.go == 'true' && env.RADAR_LLM == 'ollama'
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.OLLAMA_MODELS }}
+          key: ollama-${{ env.OLLAMA_MODEL }}
+
+      - name: Start Ollama
+        if: steps.hours.outputs.go == 'true' && env.RADAR_LLM == 'ollama'
+        run: |
+          curl -fsSL https://ollama.com/install.sh | sh
+          sudo systemctl stop ollama 2>/dev/null || true   # run our own server so it uses the cached models folder
+          mkdir -p "$OLLAMA_MODELS"
+          nohup ollama serve > ollama.log 2>&1 &
+          for i in $(seq 1 30); do curl -sf http://localhost:11434/api/tags >/dev/null && break; sleep 1; done
+          ollama pull "$OLLAMA_MODEL"
+
+      - name: Run radar
+        if: steps.hours.outputs.go == 'true'
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+          MAIL_TO: ${{ secrets.MAIL_TO }}
+        run: python -u -m radar.main
+
+      - name: Save state (radar.db)
+        if: steps.hours.outputs.go == 'true'
+        run: |
+          git config user.name "job-radar"
+          git config user.email "job-radar@users.noreply.github.com"
+          git add radar.db
+          if git diff --cached --quiet; then echo "no state change"; exit 0; fi
+          git commit -m "radar state $(date -u +'%F %H:%M')"
+          git pull --rebase -X theirs   # in case you pushed a change (e.g. companies.yaml) during the run
+          git push

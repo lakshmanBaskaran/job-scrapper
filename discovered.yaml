@@ -1,0 +1,139 @@
+# Paste the entries you want into companies.yaml under `companies:`.
+# Comments show open jobs today: total / in Ireland. 0 in Ireland = probably skip.
+
+  # 60 jobs / 54 Ireland
+  - {name: Integrity360, ats: bamboohr, slug: integrity360}
+
+  # 76 jobs / 18 Ireland
+  - {name: ALPACA, ats: greenhouse, slug: alpaca}
+
+  # 13 jobs / 12 Ireland
+  - {name: Deciphex, ats: bamboohr, slug: deciphex}
+
+  # 10 jobs / 10 Ireland
+  - {name: Currenxie, ats: bamboohr, slug: currenxie}
+
+  # 8 jobs / 6 Ireland
+  - {name: CR2, ats: bamboohr, slug: cr2}
+
+  # 3 jobs / 3 Ireland
+  - {name: Origina, ats: bamboohr, slug: origina}
+
+  # 16 jobs / 1 Ireland
+  - {name: Qashio, ats: teamtailor, slug: qashio}
+
+  # 31 jobs / 0 Ireland
+  - {name: Aylien, ats: ashby, slug: quantexa}
+
+  # 3 jobs / 0 Ireland
+  - {name: CoinJar, ats: workable, slug: coinjar}
+
+  # 21 jobs / 0 Ireland
+  - {name: Contentful, ats: greenhouse, slug: contentful}
+
+  # 5 jobs / 0 Ireland
+  - {name: Delve, ats: teamtailor, slug: delve}
+
+  # 3 jobs / 0 Ireland
+  - {name: EIDA Solutions, ats: personio, slug: eida-solutions}
+
+  # 3 jobs / 0 Ireland
+  - {name: First Derivative, ats: pinpoint, slug: firstderivative}
+
+  # 4 jobs / 0 Ireland
+  - {name: Gong, ats: recruitee, slug: gong}
+
+  # 11 jobs / 0 Ireland
+  - {name: Mural, ats: ashby, slug: mural}
+
+  # 4 jobs / 0 Ireland
+  - {name: NomuPay, ats: personio, slug: nomupay}
+
+  # 72 jobs / 0 Ireland
+  - {name: Qualtrics, ats: greenhouse, slug: qualtrics}
+
+  # 9 jobs / 0 Ireland
+  - {name: Roadie, ats: greenhouse, slug: roadie}
+
+  # 98 jobs / 0 Ireland
+  - {name: Smartsheet, ats: greenhouse, slug: smartsheet}
+
+  # 3 jobs / 0 Ireland
+  - {name: Source, ats: lever, slug: source}
+
+# Not found (custom careers site, wrong name/URL, or no open jobs):
+#   Ardanis Technologies
+#   CeADAR
+#   Centripetal
+#   Cloudsmith
+#   Continuous Software
+#   XOCEAN
+#   Clio
+#   Datavant
+#   Integral Ad Science
+#   Liberty IT
+#   OpenText
+#   Rapid7
+#   Remitly
+#   Catalyst
+#   CleverCards
+#   EdgeTier
+#   Galvia AI
+#   Kneat Solutions
+#   Manna Drone Delivery
+#   Trustap
+#   HubSpot
+#   Akara Robotics
+#   AMPLY Discovery
+#   Assiduous
+#   Buymedia
+#   Cozmotec
+#   CreditLogic
+#   Cytidel
+#   Dataships
+#   Grinds 360
+#   Hexis
+#   Imvizar
+#   Numra
+#   Oblivious AI
+#   Proveye
+#   Skillsvista
+#   Solgari
+#   Spellings for Me
+#   Sweepr
+#   ToDesktop
+#   ZeroMission
+#   Zerve
+#   Brazn.ai
+#   Datalex
+#   Deliverance AI
+#   Discovered Labs
+#   Glacis
+#   Hostelworld
+#   Kinesense
+#   LatticeFlow AI
+#   Lemonet
+#   Lex Consultancy
+#   Newcode.ai
+#   Nuritas
+#   Pantheon Platform
+#   PSK Ireland
+#   pubGENIUS.inc
+#   Seapoint
+#   SleepScore Labs
+#   SoapBox Labs
+#   WeCoOwn
+#   ZenaDrone
+#   Decawave
+#   DocuSign
+#   Dun & Bradstreet
+#   FINEOS
+#   Flutter / Paddy Power
+#   Forcepoint
+#   GoTo
+#   Highspot
+#   Keywords Studios
+#   Take-Two Interactive
+#   Tenable
+#   Trellix
+#   Varonis

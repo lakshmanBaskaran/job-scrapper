@@ -29,6 +29,7 @@ jobs:
     env:
       # Which LLM: the manual-run choice, else the repo variable RADAR_LLM, else anthropic.
       RADAR_LLM: ${{ (inputs.llm != '' && inputs.llm != 'default') && inputs.llm || vars.RADAR_LLM || 'anthropic' }}
+      RADAR_MODEL: ${{ vars.RADAR_MODEL || 'claude-haiku-5-5' }}
       OLLAMA_MODEL: ${{ vars.OLLAMA_MODEL || 'qwen2.5:7b' }}
       OLLAMA_MODELS: /home/runner/ollama-models
     steps:

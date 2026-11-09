@@ -6,7 +6,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "scripts"))
 
 from radar import ats
-from radar.filters import min_years_required, role_category, rule_verdict
+from radar.filters import in_ireland, min_years_required, role_category, rule_verdict
 from radar.models import Job
 from radar.notify import build_digest
 from radar.store import Store
@@ -152,8 +152,25 @@ def test_end_to_end_with_mocked_feed(tmp_path, monkeypatch):
 
     m.main(base)  # real run: emails and saves
     assert len(sent) == 1 and "1 new" in sent[0]
-    m.main(base + ["--dry-run"])  # nothing new now; broken feed still reported
-    assert "Graduate" not in digest.read_text() and "Broken" in digest.read_text()
+    # A feed failing once or twice is a hiccup (502, timeout): not reported.
+    digest.unlink()
+    m.main(base + ["--dry-run"])
+    assert not digest.exists()
+    # Failing 3+ runs in a row means the entry is probably broken: now it's listed.
+    m.main(base)          # streak 2
+    m.main(base)          # streak 3 (no matches, so still no email)
+    assert len(sent) == 1
+    m.main(base + ["--dry-run"])
+    text = digest.read_text()
+    assert "Graduate" not in text and "Broken" in text and "failing 4 runs in a row" in text
+
+
+def test_failure_streak_resets_when_feed_recovers(tmp_path):
+    from radar.store import Store
+    st = Store(str(tmp_path / "r.db"))
+    assert st.failure_streaks({"A": "502", "B": "404"}) == {"A": 1, "B": 1}
+    assert st.failure_streaks({"B": "404"}) == {"B": 2}      # A worked this time
+    assert st.failure_streaks({"A": "502", "B": "404"}) == {"A": 1, "B": 3}
 
 
 def test_llm_verdict_parses_reply():
@@ -163,12 +180,42 @@ def test_llm_verdict_parses_reply():
     class Fake:
         def __init__(self, reply):
             self.messages = SimpleNamespace(create=lambda **kw: SimpleNamespace(
-                content=[SimpleNamespace(text=reply)]))
+                content=[SimpleNamespace(type="text", text=reply)]))
 
     yes = llm_verdict(job("Software Engineer"), Fake('Sure: {"min_years": 1, "level": "mid", "category": "swe", "reason": "x"}'))
     no = llm_verdict(job("Software Engineer"), Fake('{"min_years": 4, "level": "mid", "category": "swe", "reason": "x"}'))
     other = llm_verdict(job("Engineer"), Fake('{"min_years": 0, "level": "entry", "category": "other", "reason": "hardware"}'))
     assert (yes.keep, no.keep, other.keep) == (True, False, False) and yes.source == "claude"
+
+
+def test_claude_reply_with_thinking_block_first():
+    """Newer models can send a thinking block before the answer (the old code crashed:
+    AttributeError, 'LLM failed, check manually')."""
+    from types import SimpleNamespace
+    from radar.classify import AnthropicClassifier
+    reply = SimpleNamespace(stop_reason="end_turn", content=[
+        SimpleNamespace(type="thinking", thinking="hmm"),
+        SimpleNamespace(type="text", text='{"min_years": 0, "level": "entry", "category": "swe", "reason": "grad"}')])
+    clf = AnthropicClassifier(client=SimpleNamespace(messages=SimpleNamespace(create=lambda **kw: reply)))
+    v = clf(job("Power Platform Developer"))
+    assert v.keep and v.source == "claude"
+
+
+def test_request_retries_temporary_errors(monkeypatch):
+    from types import SimpleNamespace
+    codes = iter([502, 504, 200])
+    calls = []
+
+    def fake(method, url, **kw):
+        calls.append(1)
+        if len(calls) == 1:
+            raise ats.requests.ReadTimeout("slow")
+        c = next(codes)
+        return SimpleNamespace(status_code=c, headers={}, raise_for_status=lambda: None)
+
+    monkeypatch.setattr(ats.requests, "request", fake)
+    monkeypatch.setattr(ats.time, "sleep", lambda s: None)
+    assert ats._get("https://x").status_code == 200 and len(calls) == 4
 
 
 def test_ollama_classifier(monkeypatch):
@@ -490,3 +537,64 @@ def test_detect_ats_render_targets_skip_dead_pages(monkeypatch):
     assert d.render_targets(["https://b.ie", "https://b.ie/careers"]) == []
     # bot-blocked home page: a real browser may get through
     assert d.render_targets(["https://c.ie"]) == ["https://c.ie"]
+
+
+def test_amazon_parse_and_paging(monkeypatch):
+    from types import SimpleNamespace
+    pages = []
+
+    def fake(method, url, params=None, **kw):
+        pages.append(params["offset"])
+        jobs = [{"id_icims": f"{params['offset']}", "title": "Software Dev Engineer I", "job_path": f"/en/jobs/{params['offset']}/sde",
+                 "normalized_location": "Dublin, County Dublin, IRL", "description": "<p>Build things</p>",
+                 "basic_qualifications": "Degree in CS", "posted_date": "October 20, 2026"}]
+        return SimpleNamespace(status_code=200, headers={}, raise_for_status=lambda: None,
+                               json=lambda: {"hits": 150, "jobs": jobs})
+
+    monkeypatch.setattr(ats.requests, "request", fake)
+    monkeypatch.setattr(ats.time, "sleep", lambda s: None)
+    jobs = ats.fetch({"name": "Amazon", "ats": "amazon"})
+    assert pages == [0, 100] and len(jobs) == 2
+    j = jobs[0]
+    assert j.url == "https://www.amazon.jobs/en/jobs/0/sde" and "Degree in CS" in j.description
+    assert in_ireland(j)
+
+
+def test_eightfold_parse_and_paging(monkeypatch):
+    from types import SimpleNamespace
+    calls = []
+
+    def fake(method, url, params=None, **kw):
+        calls.append((url, params["start"], params["domain"]))
+        pos = [{"id": 100 + params["start"], "name": "Software Engineer", "locations": ["Dublin, Ireland"],
+                "canonicalPositionUrl": f"https://apply.careers.microsoft.com/careers/job/{params['start']}",
+                "t_create": 1760000000}]
+        return SimpleNamespace(status_code=200, headers={}, raise_for_status=lambda: None,
+                               json=lambda: {"count": 15, "positions": pos})
+
+    monkeypatch.setattr(ats.requests, "request", fake)
+    monkeypatch.setattr(ats.time, "sleep", lambda s: None)
+    jobs = ats.fetch({"name": "Microsoft", "ats": "eightfold", "host": "apply.careers.microsoft.com",
+                      "domain": "microsoft.com"})
+    assert [c[1] for c in calls] == [0, 10] and calls[0][2] == "microsoft.com"
+    assert calls[0][0] == "https://apply.careers.microsoft.com/api/apply/v2/jobs"
+    assert len(jobs) == 2 and jobs[0].location == "Dublin, Ireland" and in_ireland(jobs[0])
+
+
+def test_inbox_matches_career_ops_format(tmp_path):
+    from radar import inbox
+    p = tmp_path / "pipeline.md"
+    j1 = Job("Acme | Ltd", "greenhouse", "1", "Graduate Software Engineer", "Dublin, Ireland", "https://x.io/1")
+    j2 = Job("Beta", "lever", "2", "AI Engineer", "", "https://y.io/2")
+    assert inbox.add_matches(p, [(j1, None), (j2, None)]) == 2
+    text = p.read_text()
+    assert "## Pending\n\n- [ ] https://x.io/1 | Acme / Ltd | Graduate Software Engineer | Dublin, Ireland\n" \
+           "- [ ] https://y.io/2 | Beta | AI Engineer\n\n## Processed" in text
+    # same job again: nothing added; new job goes after the existing ones
+    j3 = Job("Gamma", "ashby", "3", "Cloud Engineer", "Cork", "https://z.io/3")
+    assert inbox.add_matches(p, [(j1, None), (j3, None)]) == 1
+    text = p.read_text()
+    assert text.index("y.io/2") < text.index("z.io/3") < text.index("## Processed")
+    # a URL already processed in career-ops isn't re-added
+    p.write_text(inbox.SKELETON.replace("## Processed\n", "## Processed\n\n- [x] https://w.io/9 | Old | Role\n"))
+    assert inbox.add_lines(p, ["- [ ] https://w.io/9 | Old | Role"]) == 0

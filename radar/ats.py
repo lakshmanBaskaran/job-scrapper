@@ -22,15 +22,37 @@ def _strip_html(s: str) -> str:
     return re.sub(r"\s+", " ", s).strip()
 
 
+RATE_LIMITED = {429}
+TEMPORARY = {500, 502, 503, 504}  # the board's server hiccuped; usually fine seconds later
+
+
 def _request(method, url, headers=None, **kw):
-    """HTTP with polite retries: on 429 (too many requests) or 503, wait and try again."""
-    for attempt in range(5):
-        r = requests.request(method, url, headers=headers or HEADERS, timeout=TIMEOUT, **kw)
-        if r.status_code not in (429, 503) or attempt == 4:
+    """HTTP with polite retries.
+
+    429 (too many requests): wait as long as the server asks (or 10s, 20s, ...), up to 4 retries.
+    500/502/503/504, timeouts and dropped connections are temporary: wait 5s, 10s, 15s and
+    retry, up to 3 retries. Anything else (404, 401...) fails straight away.
+    """
+    limited = temporary = 0
+    while True:
+        try:
+            r = requests.request(method, url, headers=headers or HEADERS, timeout=TIMEOUT, **kw)
+        except (requests.Timeout, requests.ConnectionError):
+            temporary += 1
+            if temporary > 3:
+                raise
+            time.sleep(5 * temporary)
+            continue
+        if r.status_code in RATE_LIMITED and limited < 4:
+            limited += 1
+            wait = r.headers.get("Retry-After", "")
+            time.sleep(min(int(wait), 60) if wait.isdigit() else 10 * limited)
+        elif r.status_code in TEMPORARY and temporary < 3:
+            temporary += 1
+            time.sleep(5 * temporary)
+        else:
             r.raise_for_status()
             return r
-        wait = r.headers.get("Retry-After", "")
-        time.sleep(min(int(wait), 60) if wait.isdigit() else 10 * (attempt + 1))
 
 
 def _get(url, **kw):
@@ -425,6 +447,75 @@ def enrich(job):
     return False
 
 
+# ---------- Amazon (amazon.jobs public search) ----------
+def parse_amazon(company, data):
+    out = []
+    for j in data.get("jobs", []):
+        path = j.get("job_path") or ""
+        loc = j.get("normalized_location") or j.get("location") or ", ".join(
+            x for x in [j.get("city", ""), j.get("country_code", "")] if x)
+        out.append(Job(
+            company=company, ats="amazon", job_id=str(j.get("id_icims") or j.get("id") or path),
+            title=(j.get("title") or "").strip(), location=loc,
+            url=("https://www.amazon.jobs" + path) if path.startswith("/") else path,
+            description=_strip_html(" ".join(j.get(k) or "" for k in
+                                             ("description", "basic_qualifications", "preferred_qualifications"))),
+            posted=j.get("posted_date", ""),
+        ))
+    return out
+
+
+def fetch_amazon(c):
+    """amazon.jobs search, Ireland only (country code IRL)."""
+    jobs, offset = [], 0
+    while True:
+        data = _get("https://www.amazon.jobs/en/search.json", params={
+            "country": c.get("country", "IRL"), "result_limit": 100, "offset": offset, "sort": "recent"}).json()
+        page = parse_amazon(c["name"], data)
+        jobs += page
+        offset += 100
+        if not page or offset >= min(int(data.get("hits") or 0), 1000):
+            break
+        time.sleep(0.5)
+    return jobs
+
+
+# ---------- Eightfold (Microsoft, Qualcomm, ...) ----------
+def parse_eightfold(company, host, data):
+    out = []
+    for j in data.get("positions", []):
+        locs = j.get("locations") or [j.get("location", "")]
+        url = j.get("canonicalPositionUrl") or f"https://{host}/careers?pid={j.get('id')}"
+        posted = j.get("t_create") or j.get("t_update") or ""
+        out.append(Job(
+            company=company, ats="eightfold", job_id=str(j.get("id") or j.get("ats_job_id") or url),
+            title=(j.get("name") or j.get("posting_name") or "").strip(),
+            location="; ".join(l for l in locs if l),
+            url=url, description=_strip_html(j.get("job_description") or ""),
+            posted=str(posted),
+        ))
+    return out
+
+
+def fetch_eightfold(c):
+    """Eightfold career sites: GET /api/apply/v2/jobs filtered to Ireland.
+
+    companies.yaml: { name: Microsoft, ats: eightfold, host: apply.careers.microsoft.com, domain: microsoft.com }
+    """
+    host, jobs, start = c["host"], [], 0
+    while True:
+        data = _get(f"https://{host}/api/apply/v2/jobs", params={
+            "domain": c["domain"], "location": c.get("location", "Ireland"),
+            "start": start, "num": 10, "sort_by": "timestamp"}).json()
+        page = parse_eightfold(c["name"], host, data)
+        jobs += page
+        start += 10
+        if not page or start >= min(int(data.get("count") or 0), 500):
+            break
+        time.sleep(0.5)
+    return jobs
+
+
 FETCHERS = {
     "greenhouse": fetch_greenhouse,
     "lever": fetch_lever,
@@ -438,6 +529,8 @@ FETCHERS = {
     "pinpoint": fetch_pinpoint,
     "teamtailor": fetch_teamtailor,
     "bamboohr": fetch_bamboohr,
+    "amazon": fetch_amazon,
+    "eightfold": fetch_eightfold,
 }
 
 

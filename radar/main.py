@@ -16,6 +16,7 @@ import yaml
 from . import ats
 from .classify import make_classifier
 from .filters import rule_verdict
+from .inbox import add_matches
 from .models import Verdict
 from .notify import build_digest, send_email
 from .store import Store
@@ -27,8 +28,12 @@ def load_companies(path):
     return [c for c in cfg["companies"] if c.get("enabled", True)]
 
 
+REPORT_AFTER = 3  # list a broken feed in the email only once it has failed this many runs in a row
+
+
 def fetch_all(companies, workers=8):
-    jobs, errors = [], []
+    """Returns (jobs, {company: error message})."""
+    jobs, errors = [], {}
     with ThreadPoolExecutor(max_workers=workers) as ex:
         futs = {ex.submit(ats.fetch, c): c for c in companies}
         for f in as_completed(futs):
@@ -36,7 +41,7 @@ def fetch_all(companies, workers=8):
             try:
                 jobs += f.result()
             except Exception as e:  # one broken feed must not kill the run
-                errors.append(f"{c['name']} ({c['ats']}): {type(e).__name__}: {str(e)[:120]}")
+                errors[c["name"]] = f"{c['name']} ({c['ats']}): {type(e).__name__}: {str(e)[:120]}"
     return jobs, errors
 
 
@@ -55,6 +60,7 @@ def classify(job, args, clf):
     try:
         return clf(job)
     except Exception as e:
+        print(f"  LLM error on {job.company}: {job.title}: {type(e).__name__}: {e}", file=sys.stderr)
         return Verdict(True, "swe", f"LLM failed ({type(e).__name__}), check manually", "rules")
 
 
@@ -102,9 +108,14 @@ def main(argv=None):
 def run(args):
     t0 = time.time()
     companies = load_companies(args.companies)
-    jobs, errors = fetch_all(companies)
+    jobs, failed = fetch_all(companies)
     store = Store(args.db)
     new = store.unseen(jobs)
+    # One-off failures (a 502, a timeout) fix themselves next hour, so they aren't reported.
+    # A feed broken for REPORT_AFTER runs in a row probably needs its companies.yaml entry fixed.
+    streaks = store.failure_streaks(failed)
+    errors = [f"{msg} (failing {streaks[name]} runs in a row)"
+              for name, msg in sorted(failed.items()) if streaks[name] >= REPORT_AFTER]
 
     clf = None
     if not args.bootstrap:
@@ -124,11 +135,11 @@ def run(args):
             matches.append((job, v))
 
     print(f"{len(companies)} companies, {len(jobs)} jobs, {len(new)} new, "
-          f"{len(matches)} matches, {len(errors)} errors, {time.time() - t0:.1f}s")
+          f"{len(matches)} matches, {len(failed)} errors, {time.time() - t0:.1f}s")
     for job, v in matches:
         print(f"  + {job.company}: {job.title} [{job.location}] ({v.reason})")
-    for e in errors:
-        print(f"  ! {e}", file=sys.stderr)
+    for name, msg in sorted(failed.items()):
+        print(f"  ! {msg} [{streaks[name]} in a row]", file=sys.stderr)
 
     if matches or (errors and not args.bootstrap):
         subject, html_body, text_body = build_digest(matches, errors)
@@ -146,10 +157,14 @@ def run(args):
         store.discard()
         print("dry run: radar.db not updated")
         return
+    # Hand this run's matches to career-ops (see radar/inbox.py). The workflow commits the file.
+    if matches:
+        n = add_matches(os.environ.get("RADAR_INBOX", "career_ops_inbox.md"), matches)
+        print(f"{n} added to career_ops_inbox.md")
     # One short write at the end, so the database is never locked during the slow LLM part.
     for job, v in verdicts:
         store.mark(job, v)
-    store.log_run(len(jobs), len(new), len(matches), errors)
+    store.log_run(len(jobs), len(new), len(matches), list(failed.values()))
     store.commit()
 
 

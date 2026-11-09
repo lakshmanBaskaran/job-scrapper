@@ -110,9 +110,14 @@ class AnthropicClassifier:
 
     def __call__(self, job: Job) -> Verdict:
         msg = self.client.messages.create(
-            model=self.model, max_tokens=150,
+            model=self.model, max_tokens=1024,
             messages=[{"role": "user", "content": build_prompt(job)}])
-        return parse_reply(msg.content[0].text.strip(), "claude")
+        # Newer models can put a "thinking" block before the answer; only text blocks hold it.
+        text = "".join(getattr(b, "text", "") for b in msg.content if getattr(b, "type", "") == "text").strip()
+        if not text:
+            kinds = ",".join(getattr(b, "type", "?") for b in msg.content) or "none"
+            raise ValueError(f"no text in reply (blocks: {kinds}, stop: {getattr(msg, 'stop_reason', '?')})")
+        return parse_reply(text, "claude")
 
 
 def make_classifier():

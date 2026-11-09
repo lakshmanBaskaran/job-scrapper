@@ -15,6 +15,11 @@ CREATE TABLE IF NOT EXISTS seen (
     source     TEXT,
     first_seen TEXT
 );
+CREATE TABLE IF NOT EXISTS feed_failures (
+    company TEXT PRIMARY KEY,
+    streak  INTEGER,      -- runs in a row this feed has failed
+    error   TEXT
+);
 CREATE TABLE IF NOT EXISTS runs (
     at        TEXT,
     fetched   INTEGER,
@@ -49,6 +54,19 @@ class Store:
              verdict.category, verdict.reason, verdict.source,
              datetime.now(timezone.utc).isoformat(timespec="seconds")),
         )
+
+    def failure_streaks(self, failed):
+        """failed: {company: error}. Bumps streaks for these, clears every other company.
+
+        Returns {company: streak}. A feed that works again starts from zero next time.
+        """
+        old = dict(self.db.execute("SELECT company, streak FROM feed_failures"))
+        self.db.execute("DELETE FROM feed_failures")
+        out = {}
+        for name, err in failed.items():
+            out[name] = old.get(name, 0) + 1
+            self.db.execute("INSERT INTO feed_failures VALUES (?,?,?)", (name, out[name], err))
+        return out
 
     def log_run(self, fetched, new, matches, errors):
         self.db.execute("INSERT INTO runs VALUES (?,?,?,?,?)",

@@ -579,22 +579,3 @@ def test_eightfold_parse_and_paging(monkeypatch):
     assert [c[1] for c in calls] == [0, 10] and calls[0][2] == "microsoft.com"
     assert calls[0][0] == "https://apply.careers.microsoft.com/api/apply/v2/jobs"
     assert len(jobs) == 2 and jobs[0].location == "Dublin, Ireland" and in_ireland(jobs[0])
-
-
-def test_inbox_matches_career_ops_format(tmp_path):
-    from radar import inbox
-    p = tmp_path / "pipeline.md"
-    j1 = Job("Acme | Ltd", "greenhouse", "1", "Graduate Software Engineer", "Dublin, Ireland", "https://x.io/1")
-    j2 = Job("Beta", "lever", "2", "AI Engineer", "", "https://y.io/2")
-    assert inbox.add_matches(p, [(j1, None), (j2, None)]) == 2
-    text = p.read_text()
-    assert "## Pending\n\n- [ ] https://x.io/1 | Acme / Ltd | Graduate Software Engineer | Dublin, Ireland\n" \
-           "- [ ] https://y.io/2 | Beta | AI Engineer\n\n## Processed" in text
-    # same job again: nothing added; new job goes after the existing ones
-    j3 = Job("Gamma", "ashby", "3", "Cloud Engineer", "Cork", "https://z.io/3")
-    assert inbox.add_matches(p, [(j1, None), (j3, None)]) == 1
-    text = p.read_text()
-    assert text.index("y.io/2") < text.index("z.io/3") < text.index("## Processed")
-    # a URL already processed in career-ops isn't re-added
-    p.write_text(inbox.SKELETON.replace("## Processed\n", "## Processed\n\n- [x] https://w.io/9 | Old | Role\n"))
-    assert inbox.add_lines(p, ["- [ ] https://w.io/9 | Old | Role"]) == 0

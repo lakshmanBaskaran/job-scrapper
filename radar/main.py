@@ -16,7 +16,6 @@ import yaml
 from . import ats
 from .classify import make_classifier
 from .filters import rule_verdict
-from .inbox import add_matches
 from .models import Verdict
 from .notify import build_digest, send_email
 from .store import Store
@@ -157,10 +156,6 @@ def run(args):
         store.discard()
         print("dry run: radar.db not updated")
         return
-    # Hand this run's matches to career-ops (see radar/inbox.py). The workflow commits the file.
-    if matches:
-        n = add_matches(os.environ.get("RADAR_INBOX", "career_ops_inbox.md"), matches)
-        print(f"{n} added to career_ops_inbox.md")
     # One short write at the end, so the database is never locked during the slow LLM part.
     for job, v in verdicts:
         store.mark(job, v)

@@ -579,3 +579,102 @@ def test_eightfold_parse_and_paging(monkeypatch):
     assert [c[1] for c in calls] == [0, 10] and calls[0][2] == "microsoft.com"
     assert calls[0][0] == "https://apply.careers.microsoft.com/api/apply/v2/jobs"
     assert len(jobs) == 2 and jobs[0].location == "Dublin, Ireland" and in_ireland(jobs[0])
+
+def test_only_and_skip_ats(tmp_path):
+    from radar.main import load_companies
+    p = tmp_path / "c.yaml"
+    p.write_text("companies:\n  - {name: A, ats: workday, tenant: a, site: x}\n"
+                 "  - {name: B, ats: greenhouse, slug: b}\n  - {name: C, ats: lever, slug: c}\n")
+    names = lambda cs: [c["name"] for c in cs]
+    assert names(load_companies(p)) == ["A", "B", "C"]
+    assert names(load_companies(p, only_ats="workday")) == ["A"]
+    assert names(load_companies(p, skip_ats="workday")) == ["B", "C"]
+    assert names(load_companies(p, skip_ats="workday, lever")) == ["B"]
+
+
+def test_workday_bot_page_gives_clear_error(monkeypatch):
+    from types import SimpleNamespace
+    import pytest
+    page = SimpleNamespace(status_code=200, headers={"Content-Type": "text/html; charset=UTF-8"},
+                           raise_for_status=lambda: None, json=lambda: (_ for _ in ()).throw(ValueError()))
+    monkeypatch.setattr(ats.requests, "request", lambda *a, **k: page)
+    with pytest.raises(RuntimeError, match="web page instead of job data"):
+        ats.fetch({"name": "Acme", "ats": "workday", "tenant": "acme", "host": "wd1", "site": "Ext",
+                   "search": ["software"]})
+
+
+def _fake_workday_server():
+    """A local stand-in for a Workday careers site with a JavaScript bot check: the job API
+    only answers once the page's own script has run and set a cookie (a plain script gets a
+    web page). Tenant 'walled' blocks everything, browser or not."""
+    import threading
+    from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+
+    class H(BaseHTTPRequestHandler):
+        def log_message(self, *a):
+            pass
+
+        def _send(self, code, ctype, body):
+            b = body.encode()
+            self.send_response(code)
+            self.send_header("Content-Type", ctype)
+            self.send_header("Content-Length", str(len(b)))
+            self.end_headers()
+            self.wfile.write(b)
+
+        def _passed_check(self):
+            return "wd_check=ok" in (self.headers.get("Cookie") or "") and not self.headers["Host"].startswith("walled.")
+
+        def do_GET(self):
+            if self.path.startswith("/en-US/"):
+                return self._send(200, "text/html", "<html><script>document.cookie='wd_check=ok; path=/'</script>Careers</html>")
+            if "/wday/cxs/" in self.path and self._passed_check():
+                return self._send(200, "application/json", json.dumps({"jobPostingInfo": {
+                    "location": "Dublin, Ireland", "jobDescription": "<p>Graduate role, 0-1 years</p>"}}))
+            return self._send(200, "text/html", "<html>Checking your browser...</html>")
+
+        def do_POST(self):
+            n = int(self.headers.get("Content-Length") or 0)
+            body = json.loads(self.rfile.read(n) or b"{}")
+            if not self._passed_check():
+                return self._send(200, "text/html", "<html>Checking your browser...</html>")
+            off = body["offset"]
+            posts = [{"title": f"Software Engineer {i}", "externalPath": f"/job/Dublin/SE_{i}",
+                      "locationsText": "2 Locations", "bulletFields": [f"R{i}"]}
+                     for i in range(off, min(off + 20, 25))]
+            return self._send(200, "application/json", json.dumps({"total": 25, "jobPostings": posts}))
+
+    srv = ThreadingHTTPServer(("127.0.0.1", 0), H)
+    threading.Thread(target=srv.serve_forever, daemon=True).start()
+    return srv
+
+
+def test_workday_through_browser_passes_js_check():
+    import pytest
+    pytest.importorskip("playwright.sync_api")
+    from radar.workday_browser import WorkdayBrowser
+    srv = _fake_workday_server()
+    port = srv.server_address[1]
+    rules = f"--host-resolver-rules=MAP *.myworkdayjobs.com 127.0.0.1:{port}"
+    acme = {"name": "Acme", "ats": "workday", "tenant": "acme", "host": "wd1", "site": "Ext",
+            "search": ["software"], "_origin": "http://acme.wd1.myworkdayjobs.com"}
+    # A plain script (no JavaScript, so no cookie) gets the bot-check page...
+    import requests as rq
+    r = rq.post(f"http://127.0.0.1:{port}/wday/cxs/acme/Ext/jobs", json={"offset": 0},
+                proxies={"http": None, "https": None})
+    assert r.headers["Content-Type"] == "text/html"
+    try:
+        b = WorkdayBrowser(launch_args=[rules]).start()
+    except Exception as e:  # no Chromium on this machine
+        pytest.skip(f"no browser: {e}")
+    try:
+        jobs = b.fetch(acme)                                   # ...a real browser gets the data
+        assert len(jobs) == 25 and jobs[0].location == "2 Locations"
+        desc, loc = b.detail(jobs[0])                          # details work too
+        assert loc == "Dublin, Ireland" and "Graduate role" in desc
+        walled = dict(acme, name="Walled", tenant="walled", _origin="http://walled.wd1.myworkdayjobs.com")
+        with pytest.raises(RuntimeError, match="even in a browser"):
+            b.fetch(walled)                                    # blocked even in a browser: give up
+    finally:
+        b.close()
+        srv.shutdown()

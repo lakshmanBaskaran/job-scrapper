@@ -21,10 +21,18 @@ from .notify import build_digest, send_email
 from .store import Store
 
 
-def load_companies(path):
+def load_companies(path, only_ats=None, skip_ats=None):
+    """only_ats / skip_ats: comma-separated job systems, e.g. "workday".
+
+    Used to split the work: GitHub runs everything except Workday (Workday started
+    blocking GitHub's servers in Nov 2026), the laptop runs only Workday.
+    """
     with open(path) as f:
         cfg = yaml.safe_load(f)
-    return [c for c in cfg["companies"] if c.get("enabled", True)]
+    only = {a.strip() for a in (only_ats or "").split(",") if a.strip()}
+    skip = {a.strip() for a in (skip_ats or "").split(",") if a.strip()}
+    return [c for c in cfg["companies"] if c.get("enabled", True)
+            and (not only or c["ats"] in only) and c["ats"] not in skip]
 
 
 REPORT_AFTER = 3  # list a broken feed in the email only once it has failed this many runs in a row
@@ -42,6 +50,27 @@ def fetch_all(companies, workers=8):
             except Exception as e:  # one broken feed must not kill the run
                 errors[c["name"]] = f"{c['name']} ({c['ats']}): {type(e).__name__}: {str(e)[:120]}"
     return jobs, errors
+
+
+def fetch_workday_in_browser(companies):
+    """Workday companies, one at a time through a real browser. Returns (jobs, failed, browser).
+
+    The browser is left open so classify() can fetch job details through it; close it after.
+    """
+    from .workday_browser import WorkdayBrowser
+    jobs, failed = [], {}
+    try:
+        browser = WorkdayBrowser().start()
+    except Exception as e:  # Playwright/Chromium not installed
+        msg = f"browser unavailable ({type(e).__name__}: {str(e)[:80]}); pip install playwright && python -m playwright install chromium"
+        return [], {c["name"]: f"{c['name']} (workday): {msg}" for c in companies}, None
+    for c in companies:
+        try:
+            jobs += browser.fetch(c)
+        except Exception as e:
+            failed[c["name"]] = f"{c['name']} (workday): {type(e).__name__}: {str(e)[:120]}"
+    ats.WORKDAY_DETAIL = browser.detail
+    return jobs, failed, browser
 
 
 def classify(job, args, clf):
@@ -89,6 +118,8 @@ def main(argv=None):
     p.add_argument("--dry-run", action="store_true")
     p.add_argument("--bootstrap", action="store_true")
     p.add_argument("--interns", action="store_true", help="include internships")
+    p.add_argument("--only-ats", help="only these job systems, comma-separated (e.g. workday)")
+    p.add_argument("--skip-ats", help="skip these job systems, comma-separated (e.g. workday)")
     args = p.parse_args(argv)
 
     if args.dry_run:  # dry runs never write, so they don't need the lock
@@ -106,8 +137,27 @@ def main(argv=None):
 
 def run(args):
     t0 = time.time()
-    companies = load_companies(args.companies)
-    jobs, failed = fetch_all(companies)
+    companies = load_companies(args.companies, args.only_ats, args.skip_ats)
+    # Workday blocks plain scripts (since Nov 2026), so by default it goes through a real browser.
+    browser = None
+    if os.getenv("RADAR_WORKDAY", "browser") == "browser":
+        wd = [c for c in companies if c["ats"] == "workday"]
+        jobs, failed = fetch_all([c for c in companies if c["ats"] != "workday"])
+        if wd:
+            wd_jobs, wd_failed, browser = fetch_workday_in_browser(wd)
+            jobs += wd_jobs
+            failed.update(wd_failed)
+    else:
+        jobs, failed = fetch_all(companies)
+    try:
+        _finish(args, t0, companies, jobs, failed)
+    finally:
+        ats.WORKDAY_DETAIL = None
+        if browser:
+            browser.close()
+
+
+def _finish(args, t0, companies, jobs, failed):
     store = Store(args.db)
     new = store.unseen(jobs)
     # One-off failures (a 502, a timeout) fix themselves next hour, so they aren't reported.

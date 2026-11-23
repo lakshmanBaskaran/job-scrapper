@@ -54,7 +54,9 @@ jobs:
 
       - name: Install
         if: steps.hours.outputs.go == 'true'
-        run: pip install -r requirements.txt
+        run: |
+          pip install -r requirements.txt
+          python -m playwright install --with-deps chromium   # Workday is read through a real browser
 
       # ---- Ollama only: install it, restore the model from cache (a 7B model is ~4.7 GB) ----
       - name: Cache Ollama model

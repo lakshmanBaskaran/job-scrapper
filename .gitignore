@@ -8,3 +8,5 @@ radar.db.lock
 ollama.log
 detect_cache.json
 detected.yaml
+radar_workday.db
+radar_workday.db-journal

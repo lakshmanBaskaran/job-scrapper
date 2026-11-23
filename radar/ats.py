@@ -5,6 +5,7 @@ Only public, unauthenticated job-board endpoints are used.
 """
 import html
 import re
+import threading
 import time
 import xml.etree.ElementTree as ET
 
@@ -211,6 +212,9 @@ def parse_workday(company, base, data):
     return out
 
 
+WORKDAY_SLOTS = threading.Semaphore(2)
+
+
 def fetch_workday(c):
     """Workday has no GET feed: POST a search per tenant.
 
@@ -221,20 +225,29 @@ def fetch_workday(c):
     api = f"https://{t}.{host}.myworkdayjobs.com/wday/cxs/{t}/{site}/jobs"
     base = f"https://{t}.{host}.myworkdayjobs.com/en-US/{site}"
     jobs = []
-    # Workday lists are large; search narrows server-side before we page.
-    for term in c.get("search", ["software", "engineer", "graduate", "developer"]):
-        offset = 0
-        while True:
-            data = _request("POST", api, json={"appliedFacets": {}, "limit": 20, "offset": offset,
-                                               "searchText": term},
-                            headers={**HEADERS, "Content-Type": "application/json"}).json()
-            jobs += parse_workday(c["name"], base, data)
-            offset += 20
-            if offset >= data.get("total", 0) or offset >= 200:
-                break
-            time.sleep(1)  # big tenants (Salesforce) rate-limit rapid paging
+    with WORKDAY_SLOTS:  # at most 2 Workday companies at once, so one IP isn't hammering it
+        # Workday lists are large; search narrows server-side before we page.
+        for term in c.get("search", ["software", "engineer", "graduate", "developer"]):
+            jobs += _workday_search(c["name"], api, base, term)
     uniq = {j.job_id: j for j in jobs}
     return list(uniq.values())
+
+
+def _workday_search(name, api, base, term):
+    jobs, offset = [], 0
+    while True:
+        r = _request("POST", api, json={"appliedFacets": {}, "limit": 20, "offset": offset,
+                                        "searchText": term},
+                     headers={**HEADERS, "Content-Type": "application/json"})
+        if "json" not in r.headers.get("Content-Type", "json"):
+            # A bot-check web page instead of job data: Workday is blocking this connection.
+            raise RuntimeError("Workday sent a web page instead of job data (blocked from this network)")
+        data = r.json()
+        jobs += parse_workday(name, base, data)
+        offset += 20
+        if offset >= data.get("total", 0) or offset >= 200:
+            return jobs
+        time.sleep(1)  # big tenants (Salesforce) rate-limit rapid paging
 
 
 # ---------- Recruitee ----------
@@ -409,7 +422,10 @@ def fetch_description(job):
     return _strip_html(" ".join(p for p in parts if p))
 
 
-WORKDAY_URL = re.compile(r"https://([\w-]+)\.(wd\d+)\.myworkdayjobs\.com/en-US/([\w-]+)(/job/.+)")
+WORKDAY_URL = re.compile(r"https?://([\w-]+)\.(wd\d+)\.myworkdayjobs\.com/en-US/([\w-]+)(/job/.+)")
+
+
+WORKDAY_DETAIL = None  # set by radar.main to WorkdayBrowser.detail when the browser route is on
 
 
 def fetch_workday_detail(job):
@@ -417,6 +433,8 @@ def fetch_workday_detail(job):
 
     The list endpoint gives "2 Locations" and no description; the detail endpoint has both.
     """
+    if WORKDAY_DETAIL is not None:
+        return WORKDAY_DETAIL(job)
     m = WORKDAY_URL.match(job.url)
     if not m:
         return "", ""
